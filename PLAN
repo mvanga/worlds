@@ -1,0 +1,25 @@
+Players
+	- Events tell what's happening on server + State updates
+	- Input sent to server. No response. Rest based on events.
+
+Scenario
+	- 1 map on server
+	- Players can move
+	- Visibility range for moves = circle of 20 tiles
+
+Client Requests
+	- Join
+		- Broadcast Player Joined event
+		- Ack/Nack
+	- Quit
+		- Broadcast Player Quit event
+		- Ack/Nack
+	- State
+		- Broadcast nothing
+		- Reply list of entities
+	- GetState
+		- Broadcast nothing
+		- Give entity information
+	- Move
+		- Broadcast Player Moved event
+		- Ack/Nack
