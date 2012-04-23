@@ -23,14 +23,14 @@ static void s_command_join_map_handle(struct s_command *c)
 	struct s_command_join_map *join;
 
 	join = container_of(c, struct s_command_join_map, command);
-	printf("player %s joined map %d at (%d, %d)\n", c->entity->name,
-		join->vmap->id, join->x, join->y);
+	printf("player %s joined map %s at (%d, %d)\n", c->entity->name,
+		join->vmap->name, join->x, join->y);
 	s_vmap_add_entity(join->vmap, c->entity, join->x, join->y);
 	struct s_vmap_bclist *bl = s_vmap_bclist_create(c->entity);
 	if (bl) {
 		s_vmap_bclist_for_each(bl, tmp) {
-			printf("broadcast to entity %s at map %d (%d, %d)\n",
-					tmp->name, tmp->vmap->id, tmp->x, tmp->y);
+			printf("broadcast to entity %s at map %s (%d, %d)\n",
+					tmp->name, tmp->vmap->name, tmp->x, tmp->y);
 		}
 	}
 	s_vmap_bclist_free(bl);
@@ -46,14 +46,14 @@ static void s_command_quit_map_handle(struct s_command *c)
 	if (!c->entity->vmap)
 		return;
 	
-	printf("player %s quit map %d at (%d %d)\n", c->entity->name,
-		c->entity->vmap->id, c->entity->x, c->entity->y);
+	printf("player %s quit map %s at (%d %d)\n", c->entity->name,
+		c->entity->vmap->name, c->entity->x, c->entity->y);
 	
 	struct s_vmap_bclist *bl = s_vmap_bclist_create(c->entity);
 	if (bl) {
 		s_vmap_bclist_for_each(bl, tmp) {
-			printf("broadcast to entity %s at map %d (%d, %d)\n",
-					tmp->name, tmp->vmap->id, tmp->x, tmp->y);
+			printf("broadcast to entity %s at map %s (%d, %d)\n",
+					tmp->name, tmp->vmap->name, tmp->x, tmp->y);
 		}
 	}
 	s_vmap_remove_entity(c->entity);

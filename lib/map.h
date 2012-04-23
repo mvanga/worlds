@@ -36,6 +36,7 @@ struct s_vmap_ops {
 /* Virtual map structure */
 struct s_vmap {
 	uint32_t id;
+	char *name;
 	struct s_vmap_ops *ops;
 	struct list_node list;
 };

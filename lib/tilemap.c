@@ -8,7 +8,6 @@
 struct list_head tilemaps;
 
 struct s_tilemap {
-	char *name;
 	int xlen;
 	int ylen;
 	uint32_t *tiles;
@@ -86,9 +85,9 @@ struct s_vmap_ops tilemap_ops = {
 struct s_tilemap test = {
 	.xlen = 50,
 	.ylen = 50,
-	.name = "test-map",
 	.vmap = {
 		.id = 0,
+		.name = "test-map",
 		.ops = &tilemap_ops,
 	},
 };
