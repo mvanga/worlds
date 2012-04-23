@@ -41,13 +41,11 @@ static void s_command_join_map_handle(struct s_command *c)
 
 static void s_command_quit_map_handle(struct s_command *c)
 {
-	struct s_command_quit_map *quit;
 	struct s_entity *tmp;
 	
 	if (!c->entity->map)
 		return;
 	
-	quit = container_of(c, struct s_command_quit_map, command);
 	printf("player %s quit map %d at (%d %d)\n", c->entity->name,
 		c->entity->map->id, c->entity->x, c->entity->y);
 	
