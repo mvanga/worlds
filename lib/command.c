@@ -67,7 +67,7 @@ static void s_command_local_chat_handle(struct s_command *c)
         struct s_command_local_chat *chat;
         struct s_entity *tmp;
 
-        if(!c->entity->vmap)
+        if (!c->entity->vmap)
                 return;
 
         chat = container_of(c, struct s_command_local_chat, command);
@@ -82,6 +82,7 @@ static void s_command_local_chat_handle(struct s_command *c)
         }
         s_vmap_bclist_free(bl);
         printf("\n");
+        free(chat->string);
         free(c);
 }
 
@@ -116,13 +117,13 @@ struct s_command_quit_map *s_command_quit_map_create(struct s_entity *e)
 	return c;
 }
 
-// Not sure whether to return the command or chat string
 struct s_command_local_chat *s_command_local_chat_create(struct s_entity *e, char *string)
 {
         struct s_command_local_chat *c;
 
         c = malloc(sizeof(struct s_command_local_chat));
-        c->string = string;
+        c->string = malloc(strlen(string) + 1);
+        strcpy(c->string, string);
         if (!c)
                 return NULL;
         s_command_init(&c->command, e, s_command_local_chat_handle);
@@ -130,7 +131,6 @@ struct s_command_local_chat *s_command_local_chat_create(struct s_entity *e, cha
 
         return c;
 }
-
 
 void s_command_dispatch(int n)
 {
