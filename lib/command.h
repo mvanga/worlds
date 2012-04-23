@@ -31,6 +31,11 @@ struct s_command_quit_map {
 	struct s_command command;
 };
 
+struct s_command_local_chat {
+        struct s_command command;
+        char *string;
+};
+
 struct s_command_move {
 	struct s_command command;
 	int tx;
@@ -43,6 +48,7 @@ void s_command_init(struct s_command *c, struct s_entity *e, handle_f h);
 struct s_command_join_map *s_command_join_map_create(struct s_entity *e,
 	struct s_vmap *m, int x, int y);
 struct s_command_quit_map *s_command_quit_map_create(struct s_entity *e);
+struct s_command_local_chat *s_command_local_chat_create(struct s_entity *e, char *string);
 void s_command_dispatch(int n);
 
 #endif

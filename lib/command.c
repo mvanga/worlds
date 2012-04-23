@@ -62,6 +62,29 @@ static void s_command_quit_map_handle(struct s_command *c)
 	free(c);
 }
 
+static void s_command_local_chat_handle(struct s_command *c)
+{
+        struct s_command_local_chat *chat;
+        struct s_entity *tmp;
+
+        if(!c->entity->vmap)
+                return;
+
+        chat = container_of(c, struct s_command_local_chat, command);
+        printf("player %s broadcasting message %s\n", c->entity->name, chat->string);
+
+        struct s_vmap_bclist *bl = s_vmap_bclist_create(c->entity);
+        if (bl) {
+                s_vmap_bclist_for_each(bl, tmp) {
+                        printf("broadcast message %s to entity %s at map %d (%d, %d)\n",
+                               chat->string, tmp->name, tmp->vmap->id, tmp->x, tmp->y);
+                }
+        }
+        s_vmap_bclist_free(bl);
+        printf("\n");
+        free(c);
+}
+
 struct s_command_join_map *s_command_join_map_create(struct s_entity *e,
 	struct s_vmap *m, int x, int y)
 {
@@ -92,6 +115,22 @@ struct s_command_quit_map *s_command_quit_map_create(struct s_entity *e)
 
 	return c;
 }
+
+// Not sure whether to return the command or chat string
+struct s_command_local_chat *s_command_local_chat_create(struct s_entity *e, char *string)
+{
+        struct s_command_local_chat *c;
+
+        c = malloc(sizeof(struct s_command_local_chat));
+        c->string = string;
+        if (!c)
+                return NULL;
+        s_command_init(&c->command, e, s_command_local_chat_handle);
+        list_add_tail(&comm_queue, &c->command.list);
+
+        return c;
+}
+
 
 void s_command_dispatch(int n)
 {

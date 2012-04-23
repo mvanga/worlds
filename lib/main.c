@@ -36,6 +36,11 @@ int main()
 		s_command_join_map_create(&p[i]->entity, m, x, y);
 	}
 
+        for (i = 0; i <NTIMES; i++) {
+                char buf[] = "local chat";
+                s_command_local_chat_create(&p[i]->entity, buf);
+        }
+
 	for (i = 0; i < NTIMES; i++)
 		s_command_quit_map_create(&p[i]->entity);
 
