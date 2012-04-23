@@ -6,7 +6,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define NTIMES	10000
+#define NTIMES	100
 
 int main()
 {
@@ -18,7 +18,7 @@ int main()
 	s_maps_init();
 	s_commands_init();
 
-	struct s_map *m = s_map_create(0, 500, 500);
+	struct s_map *m = s_map_create(0, 20, 20);
 
 	for (i = 0; i < NTIMES; i++) {
 		char buf[100];
@@ -28,12 +28,15 @@ int main()
 	}
 
 	for (i = 0; i < NTIMES; i++) {
-		int x = random()%500;
-		int y = random()%500;
+		int x = random()%20;
+		int y = random()%20;
 		s_command_join_map_create(&p[i]->entity, m, x, y);
 	}
 
-	s_command_dispatch(NTIMES*2);
+	for (i = 0; i < NTIMES; i++)
+		s_command_quit_map_create(&p[i]->entity);
+
+	s_command_dispatch(NTIMES*4);
 
 	for (i = 0; i < NTIMES; i++) {
 		s_player_unregister(p[i]);

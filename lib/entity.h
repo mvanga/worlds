@@ -14,8 +14,8 @@ struct c_entity {
 	int type;
 };
 
-#define ENTITY_STATE_STATIC
-#define ENTITY_STATE_MOVING
+#define ENTITY_STATE_STATIC	0
+#define ENTITY_STATE_MOVING	1
 
 struct s_entity;
 

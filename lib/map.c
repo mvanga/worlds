@@ -51,6 +51,9 @@ void s_map_add_entity(struct s_map *m, struct s_entity *e, int x, int y)
 void s_map_remove_entity(struct s_entity *e)
 {
 	list_del(&e->map_list);
+	e->map = NULL;
+	e->x = -1;
+	e->y = -1;
 }
 
 struct list_head *bcast_list_create(struct s_entity *e)

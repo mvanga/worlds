@@ -40,9 +40,9 @@ struct s_command_move {
 
 void s_commands_init(void);
 void s_command_init(struct s_command *c, struct s_entity *e, handle_f h);
-void s_command_join_map_handle(struct s_command *c);
 struct s_command_join_map *s_command_join_map_create(struct s_entity *e,
 	struct s_map *m, int x, int y);
+struct s_command_quit_map *s_command_quit_map_create(struct s_entity *e);
 void s_command_dispatch(int n);
 
 #endif
