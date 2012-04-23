@@ -2,7 +2,7 @@
 #define MMO_LIB_COMMAND_H
 
 #include "entity.h"
-#include "map.h"
+#include "vmap.h"
 
 #include <list.h>
 

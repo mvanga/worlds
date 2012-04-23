@@ -1,4 +1,4 @@
-#include "map.h"
+#include "vmap.h"
 #include <list.h>
 
 #include <stdlib.h>

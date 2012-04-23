@@ -1,5 +1,5 @@
 #include "command.h"
-#include "map.h"
+#include "vmap.h"
 
 #include <stdio.h>
 #include <stdlib.h>

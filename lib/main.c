@@ -1,6 +1,6 @@
 #include "entity.h"
 #include "player.h"
-#include "map.h"
+#include "vmap.h"
 #include "command.h"
 #include "tilemap.h"
 
