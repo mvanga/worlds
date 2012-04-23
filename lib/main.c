@@ -2,6 +2,7 @@
 #include "player.h"
 #include "map.h"
 #include "command.h"
+#include "tilemap.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -15,10 +16,12 @@ int main()
 
 	s_entities_init();
 	s_players_init();
-	s_maps_init();
+	s_vmaps_init();
 	s_commands_init();
 
-	struct s_map *m = s_map_create(0, 20, 20);
+	s_tilemaps_init();
+
+	struct s_vmap *m = s_vmap_find(0);
 
 	for (i = 0; i < NTIMES; i++) {
 		char buf[100];
@@ -43,7 +46,7 @@ int main()
 		s_player_destroy(p[i]);
 	}
 
-	s_map_destroy(m);
+	s_tilemaps_exit();
 
 	return 0;
 }

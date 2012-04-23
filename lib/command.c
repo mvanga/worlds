@@ -24,16 +24,16 @@ static void s_command_join_map_handle(struct s_command *c)
 
 	join = container_of(c, struct s_command_join_map, command);
 	printf("player %s joined map %d at (%d, %d)\n", c->entity->name,
-		join->map->id, join->x, join->y);
-	s_map_add_entity(join->map, c->entity, join->x, join->y);
-	struct list_head *bl = bcast_list_create(c->entity);
+		join->vmap->id, join->x, join->y);
+	s_vmap_add_entity(join->vmap, c->entity, join->x, join->y);
+	struct s_vmap_bclist *bl = s_vmap_bclist_create(c->entity);
 	if (bl) {
-		list_for_each(bl, tmp, bcast_list) {
+		s_vmap_bclist_for_each(bl, tmp) {
 			printf("broadcast to entity %s at map %d (%d, %d)\n",
-					tmp->name, tmp->map->id, tmp->x, tmp->y);
+					tmp->name, tmp->vmap->id, tmp->x, tmp->y);
 		}
 	}
-	bcast_list_free(bl);
+	s_vmap_bclist_free(bl);
 	printf("\n");
 	free(c);
 }
@@ -43,37 +43,35 @@ static void s_command_quit_map_handle(struct s_command *c)
 {
 	struct s_entity *tmp;
 	
-	if (!c->entity->map)
+	if (!c->entity->vmap)
 		return;
 	
 	printf("player %s quit map %d at (%d %d)\n", c->entity->name,
-		c->entity->map->id, c->entity->x, c->entity->y);
+		c->entity->vmap->id, c->entity->x, c->entity->y);
 	
-	struct list_head *bl = bcast_list_create(c->entity);
+	struct s_vmap_bclist *bl = s_vmap_bclist_create(c->entity);
 	if (bl) {
-		list_for_each(bl, tmp, bcast_list) {
+		s_vmap_bclist_for_each(bl, tmp) {
 			printf("broadcast to entity %s at map %d (%d, %d)\n",
-					tmp->name, tmp->map->id, tmp->x, tmp->y);
+					tmp->name, tmp->vmap->id, tmp->x, tmp->y);
 		}
 	}
-	s_map_remove_entity(c->entity);
-	bcast_list_free(bl);
+	s_vmap_remove_entity(c->entity);
+	s_vmap_bclist_free(bl);
 	printf("\n");
 	free(c);
 }
 
 struct s_command_join_map *s_command_join_map_create(struct s_entity *e,
-	struct s_map *m, int x, int y)
+	struct s_vmap *m, int x, int y)
 {
 	struct s_command_join_map *c;
 
 	c = malloc(sizeof(struct s_command_join_map));
 	if (!c || !m)
 		return NULL;
-	if (x > m->xlen || y > m->ylen)
-		return NULL;
 	s_command_init(&c->command, e, s_command_join_map_handle);
-	c->map = m;
+	c->vmap = m;
 	c->x = x;
 	c->y = y;
 

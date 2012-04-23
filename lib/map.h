@@ -3,23 +3,55 @@
 
 #include "entity.h"
 
-struct s_map {
-	int id;
-	int xlen;
-	int ylen;
-	uint32_t *tiles;
-	struct list_head entities;
+#include <stdint.h>
+
+#define s_vmap_bclist_for_each(bcl, t) \
+	list_for_each(&bcl->bcast, t, bcast_list)
+
+/* Broadcast list structure */
+struct s_vmap_bclist {
+	struct s_entity *entity;
+	struct list_head bcast;
+};
+
+/* Allocate a new broadcast list */
+struct s_vmap_bclist *s_vmap_bclist_alloc(void);
+/* Free a broadcast list */
+void s_vmap_bclist_free(struct s_vmap_bclist *);
+/* Add a server entity to a broadcast list */
+void s_vmap_bclist_add_entity(struct s_vmap_bclist *, struct s_entity *);
+
+/* Create a broadcast list for a specific entity */
+struct s_vmap_bclist *s_vmap_bclist_create(struct s_entity *);
+
+/* Virtual map operations */
+struct s_vmap_ops {
+	int (*init)(struct s_vmap *);
+	int (*exit)(struct s_vmap *);
+	int (*add_entity)(struct s_vmap *, struct s_entity *, int, int);
+	int (*remove_entity)(struct s_vmap *, struct s_entity *);
+	int (*bclist_create)(struct s_vmap *, struct s_vmap_bclist *);
+};
+
+/* Virtual map structure */
+struct s_vmap {
+	uint32_t id;
+	struct s_vmap_ops *ops;
 	struct list_node list;
 };
 
-int s_maps_init(void);
-struct s_map *s_map_create(int, int, int);
-void s_map_destroy(struct s_map *);
-/* Get list of entities to broadcast to (uses entity->visibility) */
-struct list_head *bcast_list_create(struct s_entity *e);
-void bcast_list_free(struct list_head *l);
+/* Initialize virtual maps subsystem */
+int s_vmaps_init(void);
 
-void s_map_add_entity(struct s_map *m, struct s_entity *e, int x, int y);
-void s_map_remove_entity(struct s_entity *e);
+/* Register/unregister a map */
+int s_vmap_register(struct s_vmap *);
+void s_vmap_unregister(struct s_vmap *);
+
+/* Find a map by its ID */
+struct s_vmap *s_vmap_find(uint32_t id);
+
+/* Add/remove entities from a map */
+int s_vmap_add_entity(struct s_vmap *, struct s_entity *, int, int);
+int s_vmap_remove_entity(struct s_entity *);
 
 #endif

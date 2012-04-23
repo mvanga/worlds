@@ -3,83 +3,100 @@
 
 #include <stdlib.h>
 
-struct list_head maps;
+static struct list_head vmaps;
 
-int s_maps_init(void)
+int s_vmaps_init(void)
 {
-	list_head_init(&maps);
+	list_head_init(&vmaps);
 	return 0;
 }
 
-struct s_map *s_map_create(int id, int xlen, int ylen)
+struct s_vmap_bclist *s_vmap_bclist_alloc(void)
 {
-	struct s_map *m;
+	struct s_vmap_bclist *bcl;
 
-	m = malloc(sizeof(struct s_map));
-	if (!m)
+	bcl = malloc(sizeof(struct s_vmap_bclist));
+	if (!bcl)
 		return NULL;
-	m->id = id;
-	m->xlen = xlen;
-	m->ylen = ylen;
-	m->tiles = malloc(sizeof(uint32_t)*xlen*ylen);
-	if (!m->tiles) {
-		free(m);
+	bcl->entity = NULL;
+	list_head_init(&bcl->bcast);
+
+	return bcl;
+}
+
+void s_vmap_bclist_free(struct s_vmap_bclist *bcl)
+{
+	if (!bcl)
+		return;
+	free(bcl);
+}
+
+void s_vmap_bclist_add_entity(struct s_vmap_bclist *bcl, struct s_entity *e)
+{
+	list_add(&bcl->bcast, &e->bcast_list);
+}
+
+struct s_vmap_bclist *s_vmap_bclist_create(struct s_entity *e)
+{
+	int ret;
+	struct s_vmap_bclist *bcl;
+
+	if (!e)
+		return NULL;
+	if (!e->vmap)
+		return NULL;
+	bcl = s_vmap_bclist_alloc();
+	if (!bcl)
+		return NULL;
+	bcl->entity = e;
+	ret = e->vmap->ops->bclist_create(e->vmap, bcl);
+	if (ret < 0) {
+		s_vmap_bclist_free(bcl);
 		return NULL;
 	}
-	list_head_init(&m->entities);
-	list_add(&maps, &m->list);
 
-	return m;
+	return bcl;
 }
 
-void s_map_destroy(struct s_map *m)
+int s_vmap_register(struct s_vmap *vmap)
 {
-	if (m->tiles)
-		free(m->tiles);
-	list_del(&m->list);
-	free(m);
+	/* TODO: Make sure all ops are set here */
+	list_add(&vmaps, &vmap->list);
+	vmap->ops->init(vmap);
+	return 0;
 }
 
-void s_map_add_entity(struct s_map *m, struct s_entity *e, int x, int y)
+void s_vmap_unregister(struct s_vmap *vmap)
 {
-	e->map = m;
-	e->x = x;
-	e->y = y;
-	list_add(&m->entities, &e->map_list);
+	vmap->ops->exit(vmap);
+	list_del(&vmap->list);
 }
 
-void s_map_remove_entity(struct s_entity *e)
+struct s_vmap *s_vmap_find(uint32_t id)
 {
-	list_del(&e->map_list);
-	e->map = NULL;
-	e->x = -1;
-	e->y = -1;
-}
+	struct s_vmap *t;
 
-struct list_head *bcast_list_create(struct s_entity *e)
-{
-	struct list_head *l;
-	struct s_entity *tmp;
-
-	if (!e->map)
-		return NULL;
-	l = malloc(sizeof(struct list_head));
-	if (!l)
-		return NULL;
-	list_head_init(l);
-	list_for_each(&e->map->entities, tmp, map_list) {
-		int dist = (tmp->x - e->x)*(tmp->x - e->x) + 
-			(tmp->y - e->y)*(tmp->y - e->y);
-		int vis = (e->visibility * e->visibility);
-		if (dist <= vis && tmp != e) {
-			list_add(l, &tmp->bcast_list);
-		}
+	list_for_each(&vmaps, t, list) {
+		if (t->id == id)
+			return t;
 	}
-	return l;
+
+	return NULL;
 }
 
-void bcast_list_free(struct list_head *l)
+int s_vmap_add_entity(struct s_vmap *vmap, struct s_entity *e, int x, int y)
 {
-	if (l)
-		free(l);
+	if (!vmap)
+		return -1;
+	return vmap->ops->add_entity(vmap, e, x, y);
+}
+
+int s_vmap_remove_entity(struct s_entity *e)
+{
+	struct s_vmap *vmap;
+
+	vmap = e->vmap;
+	if (!vmap)
+		return -1;
+	return vmap->ops->remove_entity(vmap, e);
 }

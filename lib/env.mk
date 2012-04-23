@@ -5,6 +5,7 @@ obj-y +=  main.o \
 	player.o \
 	map.o \
 	command.o \
+	tilemap.o \
 
 cflags-y += -DCONFIG_BUFSIZE=2048
 cflags-y += -I./include -Wall -Wextra -ggdb

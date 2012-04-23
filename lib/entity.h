@@ -25,7 +25,7 @@ struct s_entity {
 	char *name;
 	int id;
 	int type;
-	struct s_map *map;
+	struct s_vmap *vmap;
 	int x;
 	int y;
 	int state;
