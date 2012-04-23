@@ -70,7 +70,9 @@ struct s_command_join_map *s_command_join_map_create(struct s_entity *e,
 	struct s_command_join_map *c;
 
 	c = malloc(sizeof(struct s_command_join_map));
-	if (!c)
+	if (!c || !m)
+		return NULL;
+	if (x > m->xlen || y > m->ylen)
 		return NULL;
 	s_command_init(&c->command, e, s_command_join_map_handle);
 	c->map = m;
