@@ -1,7 +1,10 @@
 #include "tcp_server.h"
+#include "net.h"
+
 #include <container_of.h>
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <errno.h>
 
@@ -13,6 +16,29 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 
+struct net_listener *tcp_listener_create(void)
+{
+	struct tcp_listener *s;
+
+	s = malloc(sizeof(struct tcp_listener));
+	if (!s)
+		return NULL;
+	memset(s, 0, sizeof(struct tcp_listener));
+
+	return &s->server;
+}
+
+void tcp_listener_destroy(struct net_listener *nl)
+{
+	struct tcp_listener *server;
+
+	server = container_of(nl, struct tcp_listener, server);
+	if (nl)
+		free(nl);
+
+	free(server);
+}
+
 int tcp_listener_init(struct net_listener *l)
 {
 	struct tcp_listener *server;
@@ -23,7 +49,7 @@ int tcp_listener_init(struct net_listener *l)
 	server = container_of(l, struct tcp_listener, server);
 
 	if (server->sock != -1)
-		l->ops->exit(l);
+		l->type->ops->exit(l);
 
 	memset(&sin, 0, sizeof(sin));
 	sin.sin_family = AF_INET;
@@ -144,22 +170,26 @@ void tcp_listener_poll(struct net_listener *l, int usec)
 
 }
 
-struct net_listener_ops tcp_ops_type = {
-	.name = "tcp",
-	.create = NULL,
-	.destroy = NULL,
+struct net_listener_ops tcp_ops = {
+	.create = tcp_listener_create,
+	.destroy = tcp_listener_destroy,
 	.init = tcp_listener_init,
 	.exit = tcp_listener_exit,
 	.start = tcp_listener_start,
 	.poll = tcp_listener_poll,
 };
 
+struct net_listener_type tcp_net_type = {
+	.type = "tcp",
+	.ops = &tcp_ops,
+};
+
 void tcp_init(void)
 {
-	net_register(&tcp_ops_type);
+	net_register(&tcp_net_type);
 }
 
 void tcp_exit(void)
 {
-	net_unregister(&tcp_ops_type);
+	net_unregister(&tcp_net_type);
 }

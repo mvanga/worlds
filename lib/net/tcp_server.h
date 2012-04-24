@@ -10,8 +10,10 @@ struct tcp_listener {
 	int fdmax;
 	int fdmin;
 	fd_set master;
-
 	struct net_listener server;
 };
+
+void tcp_init(void);
+void tcp_exit(void);
 
 #endif
