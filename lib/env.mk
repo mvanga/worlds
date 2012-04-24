@@ -6,6 +6,7 @@ obj-y +=  main.o \
 	command.o \
 	vmap/vmap.o \
 	vmap/tilemap/tilemap.o \
+	net/tcp_server.o \
 
 cflags-y += -DCONFIG_BUFSIZE=2048
 cflags-y += -I./include -I. -I./vmap -I./vmap/tilemap -Wall -Wextra -ggdb
