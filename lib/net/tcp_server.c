@@ -33,8 +33,6 @@ void tcp_listener_destroy(struct net_listener *nl)
 	struct tcp_listener *server;
 
 	server = container_of(nl, struct tcp_listener, server);
-	if (nl)
-		free(nl);
 
 	free(server);
 }
