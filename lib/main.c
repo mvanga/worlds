@@ -61,8 +61,8 @@ void t_sent(struct net_listener *nl, int client, int len, char *data)
 	printf("wheee client %d sent: %s\n", client, data);
 }
 
-struct net_listener *global = NULL;
-struct net_listener *testserv = NULL;
+struct net_listener *login = NULL;
+struct net_listener *game = NULL;
 
 struct net_client_ops g_ops = {
 	.client_connected = &g_connect,
@@ -105,19 +105,18 @@ int main()
 	enet_init();
 #endif
 
-	global = net_listener_create("global", "tcp", 10000, &g_ops);
-	testserv = net_listener_create("testserv", "enet", 30000, &t_ops);
-	assert(testserv);
-	assert(global);
-	net_listener_start(global);
-	if (net_listener_start(testserv) < 0)
-		exit(1);
+	login = net_listener_create("global", "tcp", 10000, &g_ops);
+	game = net_listener_create("testserv", "enet", 30000, &t_ops);
+	assert(game);
+	assert(login);
+	net_listener_start(login);
+	net_listener_start(game);
 	while (running) {
-		net_listener_poll(testserv, 0);
-		net_listener_poll(global, 0);
+		net_listener_poll(login, 0);
+		net_listener_poll(game, 0);
 	}
-	net_listener_destroy(global);
-	net_listener_destroy(testserv);
+	net_listener_destroy(login);
+	net_listener_destroy(game);
 
 	struct s_vmap *m = s_vmap_find(0);
 
