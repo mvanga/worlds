@@ -88,6 +88,7 @@ int tcp_listener_init(struct net_listener *l)
 	if (listen(ssock, 10) < 0)
 		return -1;
 
+	freeaddrinfo(ai);
 	/* initialize the server structure */
 	server->sock = ssock;
 	FD_ZERO(&server->master);

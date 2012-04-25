@@ -5,6 +5,7 @@
 #include "tilemap.h"
 #include "net.h"
 #include "tcp_server.h"
+#include "enet_server.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -79,7 +80,12 @@ int main()
 	s_tilemaps_init();
 
 	net_init();
+#ifdef CONFIG_NET_TCP
 	tcp_init();
+#endif
+#ifdef CONFIG_NET_ENET
+	enet_init();
+#endif
 
 	printf("%p %p\n", &g_ops, &t_ops);
 	global = net_listener_create("global", "tcp", 10000, &g_ops);
@@ -125,7 +131,12 @@ int main()
 		s_player_destroy(p[i]);
 	}
 
+#ifdef CONFIG_NET_ENET
+	enet_exit();
+#endif
+#ifdef CONFIG_NET_TCP
 	tcp_exit();
+#endif
 	net_exit();
 
 	s_tilemaps_exit();
