@@ -1,3 +1,17 @@
+Core Subsystems:
+	- Networking
+		- Allows registering different networking protocols
+		- TCP
+		- UDP
+		- Enet
+	- Virtual Map
+		- Allows registering different map formats
+		- Tilemap
+	- Command
+		- Allows registering arbitrary messaging protocols and handlers
+	- Entity?
+		- Allows registering custom entity types??
+
 Players
 	- Events tell what's happening on server + State updates
 	- Input sent to server. No response. Rest based on events.
