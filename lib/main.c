@@ -89,11 +89,12 @@ int main()
 
 	printf("%p %p\n", &g_ops, &t_ops);
 	global = net_listener_create("global", "tcp", 10000, &g_ops);
-	testserv = net_listener_create("testserv", "tcp", 30000, &t_ops);
+	testserv = net_listener_create("testserv", "enet", 30000, &t_ops);
 	assert(testserv);
 	assert(global);
 	net_listener_start(global);
-	net_listener_start(testserv);
+	if (net_listener_start(testserv) < 0)
+		exit(1);
 	while (running) {
 		net_listener_poll(testserv, 0);
 		net_listener_poll(global, 0);

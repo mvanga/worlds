@@ -53,6 +53,7 @@ int enet_listener_remove_client(struct enet_listener *el, ENetPeer *p)
 		return -1;
 
 	list_del(&c->list);
+	free(c);
 
 	return 0;
 }
@@ -98,6 +99,7 @@ void enet_listener_exit(struct net_listener *l)
 
 	server = container_of(l, struct enet_listener, server);
 	enet_host_destroy(server->shost);
+	enet_deinitialize();
 }
 
 int enet_listener_start(struct net_listener *l)
@@ -110,7 +112,7 @@ int enet_listener_start(struct net_listener *l)
 	/* Create a listener and start it */
 	addr.port = htons(l->port);
 	addr.host = ENET_HOST_ANY;
-	server->shost = enet_host_create(&addr, 100000, 1, 0, 0);
+	server->shost = enet_host_create(&addr, 1000, 2, 0, 0);
 
 	if (!server->shost) {
 		printf("unable to initialize new enet listener\n");
