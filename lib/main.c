@@ -87,7 +87,6 @@ int main()
 	enet_init();
 #endif
 
-	printf("%p %p\n", &g_ops, &t_ops);
 	global = net_listener_create("global", "tcp", 10000, &g_ops);
 	testserv = net_listener_create("testserv", "enet", 30000, &t_ops);
 	assert(testserv);
