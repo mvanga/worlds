@@ -111,6 +111,7 @@ void net_listener_destroy(struct net_listener *nl)
 	net_listener_exit(nl);
 	if (nl->name)
 		free(nl->name);
+	list_del(&nl->list);
 
 	nl->type->ops->destroy(nl);
 }

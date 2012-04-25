@@ -27,12 +27,34 @@ void g_sent(struct net_listener *nl, int client, int len, char *data)
 	printf("client %d sent: %s\n", client, data);
 }
 
-struct net_listener *global;
+void t_connect(struct net_listener *nl, int client)
+{
+	printf("wheee client %d connected\n", client);
+}
+
+void t_disconnect(struct net_listener *nl, int client)
+{
+	printf("wheee client %d disconnected\n", client);
+}
+
+void t_sent(struct net_listener *nl, int client, int len, char *data)
+{
+	printf("wheee client %d sent: %s\n", client, data);
+}
+
+struct net_listener *global = NULL;
+struct net_listener *testserv = NULL;
 
 struct net_client_ops g_ops = {
 	.client_connected = &g_connect,
 	.client_disconnected = &g_disconnect,
 	.client_sent = &g_sent,
+};
+
+struct net_client_ops t_ops = {
+	.client_connected = &t_connect,
+	.client_disconnected = &t_disconnect,
+	.client_sent = &t_sent,
 };
 
 int running = 1;
@@ -59,11 +81,19 @@ int main()
 	net_init();
 	tcp_init();
 
+	printf("%p %p\n", &g_ops, &t_ops);
 	global = net_listener_create("global", "tcp", 10000, &g_ops);
+	testserv = net_listener_create("testserv", "tcp", 30000, &t_ops);
+	assert(testserv);
+	assert(global);
 	net_listener_start(global);
-	while (running)
-		net_listener_poll(global, 1000);
+	net_listener_start(testserv);
+	while (running) {
+		net_listener_poll(testserv, 0);
+		net_listener_poll(global, 0);
+	}
 	net_listener_destroy(global);
+	net_listener_destroy(testserv);
 
 	struct s_vmap *m = s_vmap_find(0);
 

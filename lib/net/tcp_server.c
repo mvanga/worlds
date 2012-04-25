@@ -15,6 +15,9 @@
 #include <sys/time.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <netdb.h>
 
 struct net_listener *tcp_listener_create(void)
 {
@@ -42,21 +45,33 @@ int tcp_listener_init(struct net_listener *l)
 	struct tcp_listener *server;
 	int ssock;
 	int opt = 1;
-	struct sockaddr_in sin;
+	struct addrinfo hints, *ai;
+	char buf[CONFIG_BUFSIZE];
 
 	server = container_of(l, struct tcp_listener, server);
 
 	if (server->sock != -1)
 		l->type->ops->exit(l);
 
-	memset(&sin, 0, sizeof(sin));
-	sin.sin_family = AF_INET;
-	sin.sin_addr.s_addr = INADDR_ANY;
-	sin.sin_port = htons(l->port);
+	// get us a socket and bind it
+	memset(&hints, 0, sizeof hints);
+	hints.ai_family = AF_UNSPEC;
+	hints.ai_socktype = SOCK_STREAM;
+	hints.ai_flags = AI_PASSIVE;
+	sprintf(buf, "%d", l->port);
+	if (getaddrinfo(NULL, buf, &hints, &ai) != 0) {
+		printf("getaddrinfo failed\n");
+		return -1;
+	}
 
 	/* create a socket to listen on */
 	if ((ssock = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
 		printf("failed to create socket\n");
+		return -1;
+	}
+	ssock = socket(ai->ai_family, ai->ai_socktype, ai->ai_protocol);
+	if (ssock < 0) {
+		printf("failed to get a valid socket\n");
 		return -1;
 	}
 
@@ -65,11 +80,13 @@ int tcp_listener_init(struct net_listener *l)
 	/* reuse the address */
 	setsockopt(ssock, SOL_SOCKET, SO_REUSEADDR, (char *)&opt, sizeof(opt));
 
-	if (bind(ssock, (struct sockaddr *)&sin, sizeof(sin)) < 0) {
+	if (bind(ssock, ai->ai_addr, ai->ai_addrlen) < 0) {
 		printf("failed to bind: %s\n", strerror(errno));
 		close(ssock);
 		return -1;
 	}
+	if (listen(ssock, 10) < 0)
+		return -1;
 
 	/* initialize the server structure */
 	server->sock = ssock;
