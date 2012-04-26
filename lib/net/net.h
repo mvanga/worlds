@@ -22,6 +22,8 @@
 #include <list.h>
 #include <stdint.h>
 
+#include "cmdng.h"
+
 struct net_listener;
 
 struct net_listener_ops {
@@ -52,6 +54,7 @@ struct net_listener_type {
 struct net_listener {
 	char *name;
 	int port;
+	struct command_manager *mgr;
 	struct net_listener_type *type;
 	struct net_client_ops *c_ops;
 	struct list_node list;

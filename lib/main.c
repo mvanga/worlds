@@ -24,6 +24,7 @@
 #include "net.h"
 #include "tcp_server.h"
 #include "enet_server.h"
+#include "cmdng.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -94,6 +95,7 @@ int main()
 	s_players_init();
 	s_vmaps_init();
 	s_commands_init();
+	commands_ng_init();
 
 	s_tilemaps_init();
 
@@ -156,6 +158,7 @@ int main()
 #endif
 	net_exit();
 
+	commands_ng_exit();
 	s_tilemaps_exit();
 
 	return 0;

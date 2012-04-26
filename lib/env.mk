@@ -1,26 +1,37 @@
 # Main
-obj-y +=  main.o \
-	list.o \
+obj-y += \
+	main.o \
 	entity.o \
 	player.o \
 	command.o \
-	vmap/vmap.o \
-	vmap/tilemap/tilemap.o \
-	net/net.o \
 
-obj-$(CONFIG_NET_TCP) += \
-	net/tcp/tcp_server.o \
+# CCAN libraries
+obj-y += \
+	list.o \
+	json.o \
 
-obj-$(CONFIG_NET_ENET) += \
-	net/enet/enet_server.o \
+obj-$(CONFIG_COMMAND) += command/cmdng.o
+obj-$(CONFIG_VMAP) += vmap/vmap.o
+obj-$(CONFIG_NET) += net/net.o
+obj-$(CONFIG_NET_TCP) += net/tcp/tcp_server.o
+obj-$(CONFIG_NET_ENET) += net/enet/enet_server.o
+obj-$(CONFIG_VMAP_TILEMAP) += vmap/tilemap/tilemap.o
 
 cflags-y += -DCONFIG_BUFSIZE=2048
-cflags-y += -I./include -I. -I./vmap -I./vmap/tilemap -I./net -Wall -Wextra -ggdb
+cflags-y += -I./include -I. -Wall -Wextra -ggdb
 cflags-y += -D_GNU_SOURCE
 cflags-y += -O3 -Wno-unused-parameter
 
-cflags-$(CONFIG_NET_TCP) += -I./net/tcp -DCONFIG_NET_TCP
-cflags-$(CONFIG_NET_ENET) += -I./net/enet -DCONFIG_NET_ENET
+# Define all the CONFIG_* variables for C code to see
+cflags-y += $(addprefix -D, $(filter CONFIG_%, $(.VARIABLES)))
+
+cflags-$(CONFIG_COMMAND) += -I./command
+cflags-$(CONFIG_NET) += -I./net
+cflags-$(CONFIG_VMAP) += -I./vmap
+
+cflags-$(CONFIG_NET_TCP) += -I./net/tcp
+cflags-$(CONFIG_NET_ENET) += -I./net/enet
+cflags-$(CONFIG_VMAP_TILEMAP) += -I./vmap/tilemap
 
 ldflags-y += -lenet
 
