@@ -1,5 +1,5 @@
 #include "json_proto.h"
-#include "cmdng.h"
+#include "command.h"
 
 #include <stdlib.h>
 #include <string.h>

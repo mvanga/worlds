@@ -22,7 +22,7 @@
 #include <list.h>
 #include <stdint.h>
 
-#include "cmdng.h"
+#include "command.h"
 
 struct net_listener;
 

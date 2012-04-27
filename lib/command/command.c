@@ -16,7 +16,7 @@
  * along with Worlds.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "cmdng.h"
+#include "command.h"
 
 #include <string.h>
 #include <stdlib.h>

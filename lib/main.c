@@ -23,7 +23,7 @@
 #include "net.h"
 #include "tcp_server.h"
 #include "enet_server.h"
-#include "cmdng.h"
+#include "command.h"
 #include "basic_game.h"
 #include "json_proto.h"
 
