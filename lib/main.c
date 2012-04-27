@@ -97,8 +97,6 @@ int main()
 	printf("\n");
 	modules_init();
 
-	log_warn("Hello World\n");
-
 	s_players_init();
 
 	login = net_listener_create("global", "tcp", 10000, "basic_game", "json", &g_ops);

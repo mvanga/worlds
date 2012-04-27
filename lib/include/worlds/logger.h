@@ -5,8 +5,8 @@
 #include <stdio.h>
 
 #ifdef CONFIG_LOGGER
-#define debug_print(file, level, msg, ...) \
-	fprintf(file, "%-7s: " msg, #level, ##__VA_ARGS__)
+#define debug_print(o, level, msg, ...) \
+	fprintf(o, "%-7s [%s:%d]: " msg , #level, __FILE__, __LINE__, ##__VA_ARGS__)
 #else
 #define debug_print(file, level, msg, ...)
 #endif
