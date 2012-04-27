@@ -16,18 +16,13 @@
  * along with Worlds.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "module.h"
 #include "vmap.h"
 #include <ccan/list.h>
 
 #include <stdlib.h>
 
 static struct list_head vmaps;
-
-int s_vmaps_init(void)
-{
-	list_head_init(&vmaps);
-	return 0;
-}
 
 struct s_vmap_bclist *s_vmap_bclist_alloc(void)
 {
@@ -118,3 +113,24 @@ int s_vmap_remove_entity(struct s_entity *e)
 		return -1;
 	return vmap->ops->remove_entity(vmap, e);
 }
+
+int vmap_subsys_init(void)
+{
+	list_head_init(&vmaps);
+	return 0;
+}
+
+void vmap_subsys_exit(void)
+{
+}
+
+#ifdef CONFIG_VMAP
+static struct module subsys = {
+	.name = "vmap",
+	.author = "Manohar Vanga",
+	.description = "Virtual map subsystem",
+	.init = vmap_subsys_init,
+	.exit = vmap_subsys_exit,
+};
+SUBSYSTEM_REGISTER(&subsys);
+#endif

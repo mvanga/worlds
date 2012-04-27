@@ -16,6 +16,7 @@
  * along with Worlds.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "module.h"
 #include "command.h"
 
 #include <string.h>
@@ -28,16 +29,13 @@ static struct list_head sets;
 static struct list_head protocols;
 static struct list_head command_queue;
 
-void commands_ng_init(void)
+void dictionary_destroy(struct dictionary *d)
 {
-	list_head_init(&command_queue);
-	list_head_init(&sets);
-	list_head_init(&protocols);
-}
-
-void commands_ng_exit(void)
-{
-	return;
+	if (!d)
+		return;
+	if (d->json)
+		json_delete(d->json);
+	free(d);
 }
 
 void command_queue_up(struct command *c)
@@ -191,10 +189,14 @@ struct command_manager *command_manager_create(char *cset, char *proto)
 	struct command_protocol *p;
 	struct command_manager *mgr;
 
-	if (!(p = command_protocol_find(proto)))
+	if (!(p = command_protocol_find(proto))) {
+		printf("no protocol %s\n", proto);
 		return NULL;
-	if (!(s = command_set_find(cset)))
+	}
+	if (!(s = command_set_find(cset))) {
+		printf("no set %s\n", cset);
 		return NULL;
+	}
 
 	mgr = malloc(sizeof(struct command_manager));
 	if (!mgr)
@@ -259,3 +261,27 @@ done:
 	free(d);
 	return -EINVAL;
 }
+
+int command_subsys_init(void)
+{
+	list_head_init(&command_queue);
+	list_head_init(&sets);
+	list_head_init(&protocols);
+	return 0;
+}
+
+void command_subsys_exit(void)
+{
+	return;
+}
+
+#ifdef CONFIG_COMMAND
+static struct module subsys = {
+	.name = "command",
+	.author = "Manohar Vanga",
+	.description = "Command subsystem",
+	.init = command_subsys_init,
+	.exit = command_subsys_exit,
+};
+SUBSYSTEM_REGISTER(&subsys);
+#endif

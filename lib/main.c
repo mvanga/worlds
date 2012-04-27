@@ -16,6 +16,7 @@
  * along with Worlds.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "module.h"
 #include "entity.h"
 #include "player.h"
 #include "vmap.h"
@@ -26,7 +27,6 @@
 #include "command.h"
 #include "basic_game.h"
 #include "json_proto.h"
-#include "module.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -90,28 +90,18 @@ int running = 1;
 void exit_handler(int sig)
 {
 	running = 0;
+	printf("\n");
 }
 
 int main()
 {
 	signal(SIGINT, exit_handler);
 
-	s_entities_init();
+	subsys_init();
+	printf("\n");
+	modules_init();
+
 	s_players_init();
-	s_vmaps_init();
-	commands_ng_init();
-	cset_basic_game_init();
-	proto_json_init();
-
-	s_tilemaps_init();
-
-	net_init();
-#ifdef CONFIG_NET_TCP
-	tcp_init();
-#endif
-#ifdef CONFIG_NET_ENET
-	enet_init();
-#endif
 
 	login = net_listener_create("global", "tcp", 10000, "basic_game", "json", &g_ops);
 	if (!login) {
@@ -135,18 +125,9 @@ int main()
 	net_listener_destroy(login);
 	net_listener_destroy(game);
 
-#ifdef CONFIG_NET_ENET
-	enet_exit();
-#endif
-#ifdef CONFIG_NET_TCP
-	tcp_exit();
-#endif
-	net_exit();
-
-	proto_json_exit();
-	cset_basic_game_exit();
-	commands_ng_exit();
-	s_tilemaps_exit();
+	modules_exit();
+	printf("\n");
+	subsys_exit();
 
 	return 0;
 }

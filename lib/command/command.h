@@ -24,12 +24,11 @@
 
 #include "entity.h"
 
-void commands_ng_init(void);
-void commands_ng_exit(void);
-
 struct dictionary {
 	struct JsonNode *json;
 };
+
+void dictionary_destroy(struct dictionary *);
 
 /* A single instance of a specific command type */
 struct command {

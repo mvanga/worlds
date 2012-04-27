@@ -31,7 +31,4 @@ struct tcp_listener {
 	struct net_listener server;
 };
 
-void tcp_init(void);
-void tcp_exit(void);
-
 #endif

@@ -16,6 +16,7 @@
  * along with Worlds.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "module.h"
 #include "enet_server.h"
 #include "net.h"
 
@@ -198,12 +199,23 @@ struct net_listener_type enet_net_type = {
 	.ops = &enet_ops,
 };
 
-void enet_init(void)
+int enet_mod_init(void)
 {
-	net_register(&enet_net_type);
+	return net_register(&enet_net_type);
 }
 
-void enet_exit(void)
+void enet_mod_exit(void)
 {
 	net_unregister(&enet_net_type);
 }
+
+#ifdef CONFIG_NET_ENET
+static struct module mod = {
+	.name = "net:enet",
+	.author = "Manohar Vanga",
+	.description = "ENet UDP networking module",
+	.init = enet_mod_init,
+	.exit = enet_mod_exit,
+};
+MODULE_REGISTER(&mod);
+#endif

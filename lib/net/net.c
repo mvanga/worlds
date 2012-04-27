@@ -16,6 +16,7 @@
  * along with Worlds.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "module.h"
 #include "net.h"
 
 #include <stdlib.h>
@@ -24,16 +25,6 @@
 
 static struct list_head net_types;
 static struct list_head net_listeners;
-
-void net_init(void)
-{
-	list_head_init(&net_types);
-	list_head_init(&net_listeners);
-}
-
-void net_exit(void)
-{
-}
 
 static void net_listener_generic_client_sent(struct net_listener *nl,
 	int client, int len, char *data)
@@ -102,20 +93,28 @@ struct net_listener *net_listener_create(char *name, char *tname, int port,
 	struct net_listener *nl;
 	struct net_listener_type *type;
 
-	if (!tname || !name || !proto || !cset)
+	if (!tname || !name || !proto || !cset) {
+		printf("invalid data\n");
 		goto err;
+	}
 
 	type = net_listener_find(tname);
-	if (!type)
+	if (!type) {
+		printf("net_listener_find\n");
 		goto err;
+	}
 
 	nl = type->ops->create();
-	if (!nl)
+	if (!nl) {
+		printf("create()\n");
 		goto err;
+	}
 
 	nl->name = malloc(strlen(name) + 1);
-	if (!nl->name)
+	if (!nl->name) {
+		printf("malloc\n");
 		goto alloc_fail;
+	}
 
 	strcpy(nl->name, name);
 	nl->port = port;
@@ -123,12 +122,16 @@ struct net_listener *net_listener_create(char *name, char *tname, int port,
 	nl->c_ops->client_sent = net_listener_generic_client_sent;
 	nl->type = type;
 	nl->mgr = command_manager_create(cset, proto);
-	if (!nl->mgr)
+	if (!nl->mgr) {
+		printf("manager: %s %s\n", cset, proto);
 		goto mgr_fail;
+	}
 
 	ret = net_listener_init(nl);
-	if (ret < 0)
+	if (ret < 0) {
+		printf("init\n");
 		goto init_fail;
+	}
 
 
 	list_add(&net_listeners, &nl->list);
@@ -195,3 +198,25 @@ void net_listener_disconnect(struct net_listener *nl, int client)
 		return;
 	return nl->type->ops->disconnect(nl, client);
 }
+
+int net_subsys_init(void)
+{
+	list_head_init(&net_types);
+	list_head_init(&net_listeners);
+	return 0;
+}
+
+void net_subsys_exit(void)
+{
+}
+
+#ifdef CONFIG_NET
+static struct module subsys = {
+	.name = "net",
+	.author = "Manohar Vanga",
+	.description = "Networking subsystem",
+	.init = net_subsys_init,
+	.exit = net_subsys_exit,
+};
+SUBSYSTEM_REGISTER(&subsys);
+#endif

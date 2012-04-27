@@ -15,7 +15,7 @@ void autodata_free(void *table)
 {
 }
 #else
-#include <ccan/ptr_valid/ptr_valid.h>
+#include <ccan/ptr_valid.h>
 
 void *autodata_make_table(const void *example, const char *name, size_t *nump)
 {

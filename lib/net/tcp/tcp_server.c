@@ -16,6 +16,7 @@
  * along with Worlds.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "module.h"
 #include "tcp_server.h"
 #include "net.h"
 
@@ -218,12 +219,23 @@ struct net_listener_type tcp_net_type = {
 	.ops = &tcp_ops,
 };
 
-void tcp_init(void)
+int tcp_mod_init(void)
 {
-	net_register(&tcp_net_type);
+	return net_register(&tcp_net_type);
 }
 
-void tcp_exit(void)
+void tcp_mod_exit(void)
 {
 	net_unregister(&tcp_net_type);
 }
+
+#ifdef CONFIG_NET_TCP
+static struct module mod = {
+	.name = "net:tcp",
+	.author = "Manohar Vanga",
+	.description = "TCP networking module",
+	.init = tcp_mod_init,
+	.exit = tcp_mod_exit,
+};
+MODULE_REGISTER(&mod);
+#endif

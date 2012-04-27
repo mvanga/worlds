@@ -9,6 +9,8 @@ obj-y += \
 	ccan/list.o \
 	ccan/json.o \
 	ccan/autodata.o \
+	ccan/noerr.o \
+	ccan/ptr_valid.o \
 
 obj-$(CONFIG_COMMAND) += command/command.o
 obj-$(CONFIG_VMAP) += vmap/vmap.o
@@ -16,8 +18,8 @@ obj-$(CONFIG_NET) += net/net.o
 obj-$(CONFIG_NET_TCP) += net/tcp/tcp_server.o
 obj-$(CONFIG_NET_ENET) += net/enet/enet_server.o
 obj-$(CONFIG_VMAP_TILEMAP) += vmap/tilemap/tilemap.o
-obj-$(CONFIG_CSET_BASIC_GAME) += command/sets/basic_game.o
-obj-$(CONFIG_PROTO_JSON) += command/protocols/json_proto.o
+obj-$(CONFIG_COMMAND_SET_BGAME) += command/sets/basic_game.o
+obj-$(CONFIG_COMMAND_PROTOCOL_JSON) += command/protocols/json_proto.o
 
 cflags-y += -DCONFIG_BUFSIZE=2048
 cflags-y += -I./include -I. -Wall -Wextra -ggdb

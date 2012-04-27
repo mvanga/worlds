@@ -16,6 +16,7 @@
  * along with Worlds.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "module.h"
 #include "entity.h"
 
 #include <string.h>
@@ -23,11 +24,6 @@
 
 static int next_id = 0;
 struct list_head entities;
-
-void s_entities_init(void)
-{
-	list_head_init(&entities);
-}
 
 void s_entity_init(struct s_entity *entity, int type, char *name, update_f u)
 {
@@ -71,3 +67,25 @@ struct s_entity *s_entity_search_by_cid(int client)
 	}
 	return NULL;
 }
+
+int entity_subsys_init(void)
+{
+	list_head_init(&entities);
+	return 0;
+}
+
+void entity_subsys_exit(void)
+{
+	return;
+}
+
+#ifdef CONFIG_ENTITY
+static struct module subsys = {
+	.name = "entity",
+	.author = "Manohar Vanga",
+	.description = "Entity subsystem",
+	.init = entity_subsys_init,
+	.exit = entity_subsys_exit,
+};
+SUBSYSTEM_REGISTER(&subsys);
+#endif

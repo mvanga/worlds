@@ -38,7 +38,4 @@ struct enet_listener {
 	struct net_listener server;
 };
 
-void enet_init(void);
-void enet_exit(void);
-
 #endif

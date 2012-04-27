@@ -16,6 +16,7 @@
  * along with Worlds.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "module.h"
 #include "vmap.h"
 
 #include <ccan/list.h>
@@ -110,12 +111,24 @@ struct s_tilemap test = {
 	},
 };
 
-void s_tilemaps_init(void)
+static int tilemap_mod_init(void)
 {
 	s_vmap_register(&test.vmap);
+	return 0;
 }
 
-void s_tilemaps_exit(void)
+static void tilemap_mod_exit(void)
 {
 	s_vmap_unregister(&test.vmap);
 }
+
+#ifdef CONFIG_VMAP_TILEMAP
+static struct module mod = {
+	.name = "vmap:tilemap",
+	.author = "Manohar Vanga",
+	.description = "Tilemap vmap module",
+	.init = tilemap_mod_init,
+	.exit = tilemap_mod_exit,
+};
+MODULE_REGISTER(&mod);
+#endif

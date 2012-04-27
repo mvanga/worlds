@@ -16,6 +16,7 @@
  * along with Worlds.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "module.h"
 #include "basic_game.h"
 
 #include <stdio.h>
@@ -23,7 +24,7 @@
 #include <string.h>
 
 #define ARRAY_SIZE(a)                               \
-  (sizeof(a) / sizeof(*(a)))
+	(sizeof(a) / sizeof(*(a)))
 
 static void command_join_map_handle(struct command *c)
 {
@@ -43,6 +44,8 @@ static void command_join_map_handle(struct command *c)
 	}
 	s_vmap_bclist_free(bl);
 	printf("\n");
+	dictionary_destroy(c->dict);
+	free(join);
 }
 
 struct command *bgame_join_map_create(struct dictionary *dict)
@@ -60,16 +63,19 @@ struct command *bgame_join_map_create(struct dictionary *dict)
 	map = s_vmap_find((uint32_t)tmp->number_);
 	if (!map)
 		return NULL;
+	json_delete(tmp);
 	/* get x */
 	tmp = json_find_member(dict->json, "x");
 	if (!tmp || tmp->tag != JSON_NUMBER)
 		return NULL;
 	x = (int)tmp->number_;
+	json_delete(tmp);
 	/* get y */
 	tmp = json_find_member(dict->json, "y");
 	if (!tmp || tmp->tag != JSON_NUMBER)
 		return NULL;
 	y = (int)tmp->number_;
+	json_delete(tmp);
 
 	join = malloc(sizeof(struct command_join_map));
 	if (!join)
@@ -136,12 +142,23 @@ static void bgame_cset_exit(struct command_set *cset)
 		command_type_unregister(&basic_game_cset, &bgame_commands[i]);
 }
 
-void cset_basic_game_init(void)
+int cset_bgame_mod_init(void)
 {
-	command_set_register(&basic_game_cset);
+	return command_set_register(&basic_game_cset);
 }
 
-void cset_basic_game_exit(void)
+void cset_bgame_mod_exit(void)
 {
 	command_set_unregister(&basic_game_cset);
 }
+
+#ifdef CONFIG_COMMAND_SET_BGAME
+static struct module mod = {
+	.name = "command:set:basic-game",
+	.author = "Manohar Vanga",
+	.description = "Basic network game command set",
+	.init = cset_bgame_mod_init,
+	.exit = cset_bgame_mod_exit,
+};
+MODULE_REGISTER(&mod);
+#endif

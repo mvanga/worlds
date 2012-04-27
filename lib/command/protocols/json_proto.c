@@ -1,3 +1,4 @@
+#include "module.h"
 #include "json_proto.h"
 #include "command.h"
 
@@ -23,6 +24,7 @@ char *proto_json_identify(struct dictionary *d)
 		return NULL;
 	}
 	strcpy(buf, n->string_);
+	json_delete(n);
 
 	return buf;
 }
@@ -56,12 +58,23 @@ struct command_protocol json_proto = {
 	.normalize = proto_json_normalize,
 };
 
-void proto_json_init(void)
+int json_proto_mod_init(void)
+{
+	return command_protocol_register(&json_proto);
+}
+
+void json_proto_mod_exit(void)
 {
 	command_protocol_register(&json_proto);
 }
 
-void proto_json_exit(void)
-{
-	command_protocol_register(&json_proto);
-}
+#ifdef CONFIG_COMMAND_PROTOCOL_JSON
+static struct module mod = {
+	.name = "command:proto:json",
+	.author = "Manohar Vanga",
+	.description = "JSON messaging protocol support",
+	.init = json_proto_mod_init,
+	.exit = json_proto_mod_exit,
+};
+MODULE_REGISTER(&mod);
+#endif
