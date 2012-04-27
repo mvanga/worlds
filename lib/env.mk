@@ -6,9 +6,9 @@ obj-y += \
 
 # CCAN libraries
 obj-y += \
-	list.o \
-	json.o \
-	autodata.o \
+	ccan/list.o \
+	ccan/json.o \
+	ccan/autodata.o \
 
 obj-$(CONFIG_COMMAND) += command/command.o
 obj-$(CONFIG_VMAP) += vmap/vmap.o
