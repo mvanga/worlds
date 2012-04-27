@@ -86,7 +86,7 @@ int running = 1;
 void exit_handler(int sig)
 {
 	running = 0;
-	printf("\n");
+	printf("Exiting\n");
 }
 
 int main()
@@ -94,8 +94,8 @@ int main()
 	signal(SIGINT, exit_handler);
 
 	subsys_init();
-	printf("\n");
 	modules_init();
+	printf("\n");
 
 	s_players_init();
 
@@ -121,8 +121,8 @@ int main()
 	net_listener_destroy(login);
 	net_listener_destroy(game);
 
-	modules_exit();
 	printf("\n");
+	modules_exit();
 	subsys_exit();
 
 	return 0;

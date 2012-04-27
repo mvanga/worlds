@@ -12,10 +12,10 @@
 #endif
 
 #define log_trace(msg, ...)	debug_print(stdout, TRACE, msg, ##__VA_ARGS__)
-#define log_debug(msg, ...)	debug_print(stdout, DEBUG, msg, ##__VA_ARGS__)
+#define log_dbg(msg, ...)	debug_print(stdout, DEBUG, msg, ##__VA_ARGS__)
 #define log_info(msg, ...)	debug_print(stdout, INFO, msg, ##__VA_ARGS__)
 #define log_warn(msg, ...)	debug_print(stderr, WARNING, msg, ##__VA_ARGS__)
-#define log_error(msg, ...)	debug_print(stderr, ERROR, msg, ##__VA_ARGS__)
+#define log_err(msg, ...)	debug_print(stderr, ERROR, msg, ##__VA_ARGS__)
 #define log_fatal(msg, ...)	debug_print(stderr, FATAL, msg, ##__VA_ARGS__)
 
 #endif
