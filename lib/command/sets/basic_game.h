@@ -19,8 +19,8 @@
 #ifndef MMO_LIB_COMMAND_SET_BASIC_GAME_H
 #define MMO_LIB_COMMAND_SET_BASIC_GAME_H
 
-#include "command.h"
-#include "vmap.h"
+#include <worlds/command.h>
+#include <worlds/vmap.h>
 
 #include <ccan/list.h>
 

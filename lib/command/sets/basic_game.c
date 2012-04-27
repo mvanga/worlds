@@ -16,7 +16,8 @@
  * along with Worlds.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "module.h"
+#include <worlds/module.h>
+
 #include "basic_game.h"
 
 #include <stdio.h>
@@ -32,6 +33,9 @@ static void command_join_map_handle(struct command *c)
 	struct command_join_map *join;
 
 	join = container_of(c, struct command_join_map, command);
+	/* If the entity already has a map, return. Use quit first */
+	if (c->entity->vmap)
+		goto done;
 	printf("player %s joined map %s at (%d, %d)\n", c->entity->name,
 		join->vmap->name, join->x, join->y);
 	s_vmap_add_entity(join->vmap, c->entity, join->x, join->y);
@@ -44,6 +48,7 @@ static void command_join_map_handle(struct command *c)
 	}
 	s_vmap_bclist_free(bl);
 	printf("\n");
+done:
 	dictionary_destroy(c->dict);
 	free(join);
 }

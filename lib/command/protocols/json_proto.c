@@ -1,6 +1,5 @@
-#include "module.h"
-#include "json_proto.h"
-#include "command.h"
+#include <worlds/module.h>
+#include <worlds/command.h>
 
 #include <stdlib.h>
 #include <string.h>

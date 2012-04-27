@@ -1,4 +1,0 @@
-#ifndef MMO_COMMAND_SET_JSON_PROTO_H
-#define MMO_COMMAND_SET_JSON_PROTO_H
-
-#endif

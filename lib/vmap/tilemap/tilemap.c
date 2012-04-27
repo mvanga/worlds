@@ -16,8 +16,8 @@
  * along with Worlds.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "module.h"
-#include "vmap.h"
+#include <worlds/module.h>
+#include <worlds/vmap.h>
 
 #include <ccan/list.h>
 

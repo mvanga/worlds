@@ -16,9 +16,10 @@
  * along with Worlds.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "module.h"
+#include <worlds/module.h>
+#include <worlds/net.h>
+
 #include "enet_server.h"
-#include "net.h"
 
 #include <ccan/container_of.h>
 

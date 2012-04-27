@@ -22,7 +22,7 @@
 #include <ccan/list.h>
 #include <ccan/json.h>
 
-#include "entity.h"
+#include <worlds/entity.h>
 
 struct dictionary {
 	struct JsonNode *json;

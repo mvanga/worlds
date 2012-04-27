@@ -16,8 +16,8 @@
  * along with Worlds.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "module.h"
-#include "entity.h"
+#include <worlds/module.h>
+#include <worlds/entity.h>
 
 #include <string.h>
 #include <stdlib.h>

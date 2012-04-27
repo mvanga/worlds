@@ -19,7 +19,7 @@
 #ifndef MMO_LIB_PLAYER_H
 #define MMO_LIB_PLAYER_H
 
-#include "entity.h"
+#include <worlds/entity.h>
 
 struct c_player {
 	int id;

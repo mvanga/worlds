@@ -22,7 +22,7 @@
 #include <stdint.h>
 #include <ccan/list.h>
 
-#include "entity.h"
+#include <worlds/entity.h>
 
 #define ENTITY_TYPE_SELF	0
 #define ENTITY_TYPE_PLAYER	1

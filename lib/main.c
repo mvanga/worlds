@@ -16,17 +16,12 @@
  * along with Worlds.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "module.h"
-#include "entity.h"
+#include <worlds/module.h>
+#include <worlds/entity.h>
+#include <worlds/vmap.h>
+#include <worlds/net.h>
+
 #include "player.h"
-#include "vmap.h"
-#include "tilemap.h"
-#include "net.h"
-#include "tcp_server.h"
-#include "enet_server.h"
-#include "command.h"
-#include "basic_game.h"
-#include "json_proto.h"
 
 #include <stdio.h>
 #include <stdlib.h>

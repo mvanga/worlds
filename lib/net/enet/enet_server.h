@@ -23,7 +23,7 @@
 
 #include <enet/enet.h>
 
-#include "net.h"
+#include <worlds/net.h>
 
 struct enet_listener_client {
 	int id;

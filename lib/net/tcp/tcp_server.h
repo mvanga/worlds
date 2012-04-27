@@ -21,7 +21,7 @@
 
 #include <fcntl.h>
 
-#include "net.h"
+#include <worlds/net.h>
 
 struct tcp_listener {
 	int sock;

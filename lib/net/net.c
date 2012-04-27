@@ -16,8 +16,8 @@
  * along with Worlds.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "module.h"
-#include "net.h"
+#include <worlds/module.h>
+#include <worlds/net.h>
 
 #include <stdlib.h>
 #include <string.h>

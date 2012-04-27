@@ -22,7 +22,7 @@
 #include <ccan/list.h>
 #include <stdint.h>
 
-#include "command.h"
+#include <worlds/command.h>
 
 struct net_listener;
 

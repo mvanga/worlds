@@ -19,7 +19,7 @@
 #ifndef MMO_LIB_MAP_H
 #define MMO_LIB_MAP_H
 
-#include "entity.h"
+#include <worlds/entity.h>
 
 #include <stdint.h>
 
