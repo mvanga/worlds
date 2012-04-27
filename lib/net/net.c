@@ -38,53 +38,16 @@ void net_exit(void)
 static void net_listener_generic_client_sent(struct net_listener *nl,
 	int client, int len, char *data)
 {
-	char *type;
+	struct s_entity *e;
 	struct dictionary *d;
-	struct command *c;
-	struct command_type *ct;
 
-	if (!nl->mgr->protocol->normalize)
+	e = s_entity_search_by_cid(client);
+	if (!e)
 		return;
-
 	d = nl->mgr->protocol->normalize(len, (unsigned char *)data);
 	if (!d)	
 		return;
-	if (!json_check(d->json, NULL)) {
-		printf("failed to validate json object\n");
-		goto done;
-	}
-	type = nl->mgr->protocol->identify(d);
-	if (!type) {
-		printf("failed to identify type\n");
-		goto done;
-	}
-	printf("got type: %s\n", type);
-	ct = command_type_find(nl->mgr->cset, (char *)type);
-	free(type);
-	if (!ct) {
-		printf("failed to find command_type\n");
-		goto done;
-	}
-	c = ct->create(d);
-	if (!c) {
-		printf("failed to create command\n");
-		goto done;
-	}
-	c->entity = s_entity_search_by_cid(client);
-	if (!c->entity)
-		goto no_entity;
-	c->type = ct;
-	c->dict = d;
-	command_queue_up(c);
-
-	return;
-
-no_entity:
-	ct->destroy(c);
-done:
-	json_delete(d->json);
-	free(d);
-	return;
+	command_manager_handle(nl->mgr, e, d);
 }
 
 static struct net_listener_type *net_listener_find(char *name)

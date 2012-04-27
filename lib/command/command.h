@@ -98,6 +98,8 @@ struct command_manager {
 /* Create a new command manager */
 struct command_manager *command_manager_create(char *cset, char *proto);
 void command_manager_destroy(struct command_manager *mgr);
+int command_manager_handle(struct command_manager *mgr, struct s_entity *e,
+	struct dictionary *d);
 
 void command_queue_up(struct command *c);
 void command_dispatch(int n);

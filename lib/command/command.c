@@ -20,6 +20,7 @@
 
 #include <string.h>
 #include <stdlib.h>
+#include <stdio.h>
 
 #include <errno.h>
 
@@ -209,4 +210,52 @@ void command_manager_destroy(struct command_manager *mgr)
 {
 	if (mgr)
 		free(mgr);
+}
+
+int command_manager_handle(struct command_manager *mgr, struct s_entity *e,
+	struct dictionary *d)
+{
+	char *type;
+	struct command *c;
+	struct command_type *ct;
+
+	if (!mgr || !d)
+		return -EINVAL;
+
+	if (!json_check(d->json, NULL)) {
+		printf("failed to validate json object\n");
+		goto done;
+	}
+	type = mgr->protocol->identify(d);
+	if (!type) {
+		printf("failed to identify type\n");
+		goto done;
+	}
+	printf("got type: %s\n", type);
+	ct = command_type_find(mgr->cset, (char *)type);
+	free(type);
+	if (!ct) {
+		printf("failed to find command_type\n");
+		goto done;
+	}
+	c = ct->create(d);
+	if (!c) {
+		printf("failed to create command\n");
+		goto done;
+	}
+	c->entity = e;
+	if (!c->entity)
+		goto no_entity;
+	c->type = ct;
+	c->dict = d;
+	command_queue_up(c);
+
+	return 0;
+
+no_entity:
+	ct->destroy(c);
+done:
+	json_delete(d->json);
+	free(d);
+	return -EINVAL;
 }

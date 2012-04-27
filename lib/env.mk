@@ -3,14 +3,13 @@ obj-y += \
 	main.o \
 	entity.o \
 	player.o \
-#	command.o \
 
 # CCAN libraries
 obj-y += \
 	list.o \
 	json.o \
 
-obj-$(CONFIG_COMMAND) += command/cmdng.o
+obj-$(CONFIG_COMMAND) += command/command.o
 obj-$(CONFIG_VMAP) += vmap/vmap.o
 obj-$(CONFIG_NET) += net/net.o
 obj-$(CONFIG_NET_TCP) += net/tcp/tcp_server.o
