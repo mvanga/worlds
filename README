@@ -1,1 +1,5 @@
 Worlds is a tiny MMO engine.
+
+1. Run ./smmo
+2. telnet localhost 10000
+3. type the following: { "command":"join_map", "map_id":0, "x":10, "y":10 }
