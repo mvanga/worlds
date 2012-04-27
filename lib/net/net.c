@@ -20,6 +20,7 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include <stdio.h>
 
 static struct list_head net_types;
 static struct list_head net_listeners;
@@ -32,6 +33,58 @@ void net_init(void)
 
 void net_exit(void)
 {
+}
+
+static void net_listener_generic_client_sent(struct net_listener *nl,
+	int client, int len, char *data)
+{
+	char *type;
+	struct dictionary *d;
+	struct command *c;
+	struct command_type *ct;
+
+	if (!nl->mgr->protocol->normalize)
+		return;
+
+	d = nl->mgr->protocol->normalize(len, (unsigned char *)data);
+	if (!d)	
+		return;
+	if (!json_check(d->json, NULL)) {
+		printf("failed to validate json object\n");
+		goto done;
+	}
+	type = nl->mgr->protocol->identify(d);
+	if (!type) {
+		printf("failed to identify type\n");
+		goto done;
+	}
+	printf("got type: %s\n", type);
+	ct = command_type_find(nl->mgr->cset, (char *)type);
+	free(type);
+	if (!ct) {
+		printf("failed to find command_type\n");
+		goto done;
+	}
+	c = ct->create(d);
+	if (!c) {
+		printf("failed to create command\n");
+		goto done;
+	}
+	c->entity = s_entity_search_by_cid(client);
+	if (!c->entity)
+		goto no_entity;
+	c->type = ct;
+	c->dict = d;
+	command_queue_up(c);
+
+	return;
+
+no_entity:
+	ct->destroy(c);
+done:
+	json_delete(d->json);
+	free(d);
+	return;
 }
 
 static struct net_listener_type *net_listener_find(char *name)
@@ -80,13 +133,13 @@ void net_listener_exit(struct net_listener *nl)
 }
 
 struct net_listener *net_listener_create(char *name, char *tname, int port,
-	struct net_client_ops *c_ops)
+	char *cset, char *proto, struct net_client_ops *c_ops)
 {
 	int ret;
 	struct net_listener *nl;
 	struct net_listener_type *type;
 
-	if (!tname || !name)
+	if (!tname || !name || !proto || !cset)
 		goto err;
 
 	type = net_listener_find(tname);
@@ -104,16 +157,24 @@ struct net_listener *net_listener_create(char *name, char *tname, int port,
 	strcpy(nl->name, name);
 	nl->port = port;
 	nl->c_ops = c_ops;
+	nl->c_ops->client_sent = net_listener_generic_client_sent;
 	nl->type = type;
+	nl->mgr = command_manager_create(cset, proto);
+	if (!nl->mgr)
+		goto mgr_fail;
+
 	ret = net_listener_init(nl);
 	if (ret < 0)
 		goto init_fail;
+
 
 	list_add(&net_listeners, &nl->list);
 
 	return nl;
 
 init_fail:
+	command_manager_destroy(nl->mgr);
+mgr_fail:
 	free(nl->name);
 alloc_fail:
 	type->ops->destroy(nl);
@@ -131,6 +192,7 @@ void net_listener_destroy(struct net_listener *nl)
 		free(nl->name);
 	list_del(&nl->list);
 
+	command_manager_destroy(nl->mgr);
 	nl->type->ops->destroy(nl);
 }
 

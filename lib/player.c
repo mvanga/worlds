@@ -34,7 +34,7 @@ void player_update(struct s_entity *e, uint64_t jiffies)
 {
 }
 
-struct s_player *s_player_create(int fd, int id, char *name)
+struct s_player *s_player_create(int client, int id, char *name)
 {
 	struct s_player *p;
 	char buf[CONFIG_BUFSIZE];
@@ -47,7 +47,7 @@ struct s_player *s_player_create(int fd, int id, char *name)
 	snprintf(buf, CONFIG_BUFSIZE, "Player%d", id);
 	s_entity_init(&p->entity, ENTITY_TYPE_PLAYER, buf, &player_update);
 	p->entity.visibility = 10;
-	p->fd = fd;
+	p->entity.client = client;
 	p->pid = id;
 	p->name = malloc(strlen(name) + 1);
 	if (!p->name) {

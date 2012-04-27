@@ -19,12 +19,13 @@
 #include "entity.h"
 #include "player.h"
 #include "vmap.h"
-#include "command.h"
 #include "tilemap.h"
 #include "net.h"
 #include "tcp_server.h"
 #include "enet_server.h"
 #include "cmdng.h"
+#include "basic_game.h"
+#include "json_proto.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -34,17 +35,30 @@
 
 void g_connect(struct net_listener *nl, int client)
 {
+	static int id = 0;
+	struct s_player *p;
+	char buf[100];
+
 	printf("client %d connected\n", client);
+	sprintf(buf, "dodo%d\n", id);
+	p = s_player_create(client, id, buf);
+	s_player_register(p);
 }
 
 void g_disconnect(struct net_listener *nl, int client)
 {
-	printf("client %d disconnected\n", client);
-}
+	struct s_player *p;
+	struct s_entity *e;
 
-void g_sent(struct net_listener *nl, int client, int len, char *data)
-{
-	printf("client %d sent: %s\n", client, data);
+	printf("client %d disconnected\n", client);
+	e = s_entity_search_by_cid(client);
+	if (!e) {
+		printf("no entity with id %d\n", client);
+		return;
+	}
+	p = container_of(e, struct s_player, entity);
+	s_player_unregister(p);
+	s_player_destroy(p);
 }
 
 void t_connect(struct net_listener *nl, int client)
@@ -57,24 +71,17 @@ void t_disconnect(struct net_listener *nl, int client)
 	printf("wheee client %d disconnected\n", client);
 }
 
-void t_sent(struct net_listener *nl, int client, int len, char *data)
-{
-	printf("wheee client %d sent: %s\n", client, data);
-}
-
 struct net_listener *login = NULL;
 struct net_listener *game = NULL;
 
 struct net_client_ops g_ops = {
 	.client_connected = &g_connect,
 	.client_disconnected = &g_disconnect,
-	.client_sent = &g_sent,
 };
 
 struct net_client_ops t_ops = {
 	.client_connected = &t_connect,
 	.client_disconnected = &t_disconnect,
-	.client_sent = &t_sent,
 };
 
 int running = 1;
@@ -86,16 +93,14 @@ void exit_handler(int sig)
 
 int main()
 {
-	int i;
-	struct s_player *p[NTIMES];
-
 	signal(SIGINT, exit_handler);
 
 	s_entities_init();
 	s_players_init();
 	s_vmaps_init();
-	s_commands_init();
 	commands_ng_init();
+	cset_basic_game_init();
+	proto_json_init();
 
 	s_tilemaps_init();
 
@@ -107,8 +112,16 @@ int main()
 	enet_init();
 #endif
 
-	login = net_listener_create("global", "tcp", 10000, &g_ops);
-	game = net_listener_create("testserv", "enet", 30000, &t_ops);
+	login = net_listener_create("global", "tcp", 10000, "basic_game", "json", &g_ops);
+	if (!login) {
+		printf("whoops login\n");
+		exit(1);
+	}
+	game = net_listener_create("testserv", "enet", 30000, "basic_game", "json", &t_ops);
+	if (!game) {
+		printf("whoops game\n");
+		exit(1);
+	}
 	assert(game);
 	assert(login);
 	net_listener_start(login);
@@ -116,39 +129,10 @@ int main()
 	while (running) {
 		net_listener_poll(login, 0);
 		net_listener_poll(game, 0);
+		command_dispatch(10);
 	}
 	net_listener_destroy(login);
 	net_listener_destroy(game);
-
-	struct s_vmap *m = s_vmap_find(0);
-
-	for (i = 0; i < NTIMES; i++) {
-		char buf[100];
-		sprintf(buf, "dodo%d\n", i);
-		p[i] = s_player_create(i+2, i, buf);
-		s_player_register(p[i]);
-	}
-
-	for (i = 0; i < NTIMES; i++) {
-		int x = random()%20;
-		int y = random()%20;
-		s_command_join_map_create(&p[i]->entity, m, x, y);
-	}
-
-        for (i = 0; i <NTIMES; i++) {
-                char buf[] = "local chat";
-                s_command_local_chat_create(&p[i]->entity, buf);
-        }
-
-	for (i = 0; i < NTIMES; i++)
-		s_command_quit_map_create(&p[i]->entity);
-
-	s_command_dispatch(NTIMES*4);
-
-	for (i = 0; i < NTIMES; i++) {
-		s_player_unregister(p[i]);
-		s_player_destroy(p[i]);
-	}
 
 #ifdef CONFIG_NET_ENET
 	enet_exit();
@@ -158,6 +142,8 @@ int main()
 #endif
 	net_exit();
 
+	proto_json_exit();
+	cset_basic_game_exit();
 	commands_ng_exit();
 	s_tilemaps_exit();
 

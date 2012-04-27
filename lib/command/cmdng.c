@@ -25,9 +25,11 @@
 
 static struct list_head sets;
 static struct list_head protocols;
+static struct list_head command_queue;
 
 void commands_ng_init(void)
 {
+	list_head_init(&command_queue);
 	list_head_init(&sets);
 	list_head_init(&protocols);
 }
@@ -35,6 +37,26 @@ void commands_ng_init(void)
 void commands_ng_exit(void)
 {
 	return;
+}
+
+void command_queue_up(struct command *c)
+{
+	if (!c)
+		return;
+	list_add_tail(&command_queue, &c->list);
+}
+
+void command_dispatch(int n)
+{
+	struct command *c;
+
+	while (--n >= 0) {
+		if (list_empty(&command_queue))
+			return;
+		c = list_top(&command_queue, struct command, list);
+		list_del(&c->list);
+		c->handle(c);
+	}
 }
 
 /* Register a single command set */

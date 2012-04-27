@@ -42,6 +42,7 @@ typedef void (*update_f)(struct s_entity *, uint64_t);
 struct s_entity {
 	char *name;
 	int id;
+	int client;
 	int type;
 	struct s_vmap *vmap;
 	int x;
@@ -66,5 +67,7 @@ void s_entities_init(void);
 void s_entity_init(struct s_entity *, int type, char *name, update_f);
 int s_entity_register(struct s_entity *entity);
 void s_entity_unregister(struct s_entity *entity);
+
+struct s_entity *s_entity_search_by_cid(int);
 
 #endif

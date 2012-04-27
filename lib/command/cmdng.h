@@ -76,9 +76,9 @@ struct command_protocol {
 	const char *name;
 	int (*init)(struct command_protocol *);
 	void (*exit)(struct command_protocol *);
-	const char *(*identify)(struct dictionary *);
-	struct dictionary *(*normalize)(unsigned char *data);
-	unsigned char *(*denormalize)(struct dictionary *);
+	char *(*identify)(struct dictionary *);
+	struct dictionary *(*normalize)(int len, unsigned char *data);
+	unsigned char *(*denormalize)(struct dictionary *, int *len);
 	struct list_node list;
 };
 
@@ -98,5 +98,8 @@ struct command_manager {
 /* Create a new command manager */
 struct command_manager *command_manager_create(char *cset, char *proto);
 void command_manager_destroy(struct command_manager *mgr);
+
+void command_queue_up(struct command *c);
+void command_dispatch(int n);
 
 #endif

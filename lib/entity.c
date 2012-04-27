@@ -38,6 +38,7 @@ void s_entity_init(struct s_entity *entity, int type, char *name, update_f u)
 	assert(entity->name != NULL);
 	strcpy(entity->name, name);
 	entity->update = u;
+	entity->client = -1;
 }
 
 int s_entity_register(struct s_entity *entity)
@@ -56,4 +57,17 @@ void s_entity_unregister(struct s_entity *entity)
 	if (entity->name)
 		free(entity->name);
 	list_del(&entity->elist);
+}
+
+struct s_entity *s_entity_search_by_cid(int client)
+{
+	struct s_entity *t;
+
+	list_for_each(&entities, t, elist) {
+		if (t->client == -1)
+			continue;
+		if (t->client == client)
+			return t;
+	}
+	return NULL;
 }

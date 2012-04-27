@@ -68,8 +68,8 @@ int net_register(struct net_listener_type *);
 void net_unregister(struct net_listener_type *);
 
 /* Call ops for server instances */
-struct net_listener *net_listener_create(char *, char *, int,
-	struct net_client_ops *);
+struct net_listener *net_listener_create(char *name, char *tname, int port,
+	char *cset, char *proto, struct net_client_ops *c_ops);
 void net_listener_destroy(struct net_listener *);
 int net_listener_start(struct net_listener *);
 void net_listener_poll(struct net_listener *, int);
