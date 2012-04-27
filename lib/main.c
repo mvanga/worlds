@@ -20,6 +20,7 @@
 #include <worlds/entity.h>
 #include <worlds/vmap.h>
 #include <worlds/net.h>
+#include <worlds/logger.h>
 
 #include "player.h"
 
@@ -95,6 +96,8 @@ int main()
 	subsys_init();
 	printf("\n");
 	modules_init();
+
+	log_warn("Hello World\n");
 
 	s_players_init();
 
