@@ -10,6 +10,8 @@ obj-y += \
 	list.o \
 	json.o \
 
+obj-y += command/sets/basic_game.o
+
 obj-$(CONFIG_COMMAND) += command/cmdng.o
 obj-$(CONFIG_VMAP) += vmap/vmap.o
 obj-$(CONFIG_NET) += net/net.o
