@@ -22,7 +22,7 @@
 #include "command.h"
 #include "vmap.h"
 
-#include <list.h>
+#include <ccan/list.h>
 
 struct command_join_map {
 	struct command command;

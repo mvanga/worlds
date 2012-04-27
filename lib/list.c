@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include <list.h>
+#include <ccan/list.h>
 
 static void *corrupt(const char *abortstr,
 		     const struct list_node *head,

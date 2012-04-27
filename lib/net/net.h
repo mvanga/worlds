@@ -19,7 +19,7 @@
 #ifndef MMO_NET_H
 #define MMO_NET_H
 
-#include <list.h>
+#include <ccan/list.h>
 #include <stdint.h>
 
 #include "command.h"

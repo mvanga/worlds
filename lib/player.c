@@ -17,7 +17,7 @@
  */
 
 #include "player.h"
-#include <list.h>
+#include <ccan/list.h>
 
 #include <stdio.h>
 #include <stdlib.h>

@@ -18,7 +18,7 @@
 
 #include "vmap.h"
 
-#include <list.h>
+#include <ccan/list.h>
 
 #define vmap_to_tilemap(vmap) \
 	container_of(vmap, struct s_tilemap, vmap)

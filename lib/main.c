@@ -26,6 +26,7 @@
 #include "command.h"
 #include "basic_game.h"
 #include "json_proto.h"
+#include "module.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -88,7 +89,7 @@ int running = 1;
 
 void exit_handler(int sig)
 {
-	sig = running = 0;
+	running = 0;
 }
 
 int main()

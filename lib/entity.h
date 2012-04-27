@@ -20,7 +20,7 @@
 #define MMO_LIB_ENTITY_H
 
 #include <stdint.h>
-#include <list.h>
+#include <ccan/list.h>
 
 #include "entity.h"
 

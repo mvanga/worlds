@@ -17,7 +17,7 @@
  */
 
 #include "vmap.h"
-#include <list.h>
+#include <ccan/list.h>
 
 #include <stdlib.h>
 

@@ -19,8 +19,8 @@
 #ifndef MMO_COMMAND_NG_H
 #define MMO_COMMAND_NG_H
 
-#include <list.h>
-#include <json.h>
+#include <ccan/list.h>
+#include <ccan/json.h>
 
 #include "entity.h"
 

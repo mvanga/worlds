@@ -8,6 +8,7 @@ obj-y += \
 obj-y += \
 	list.o \
 	json.o \
+	autodata.o \
 
 obj-$(CONFIG_COMMAND) += command/command.o
 obj-$(CONFIG_VMAP) += vmap/vmap.o
