@@ -59,7 +59,7 @@ struct command_set *command_set_find(char *name);
 /* This represents a single command type */
 struct command_type {
 	const char *name;
-	struct command *(*create)(void);
+	struct command *(*create)(struct dictionary *);
 	void (*destroy)(struct command *);
 	struct list_node list;
 };
@@ -76,7 +76,7 @@ struct command_protocol {
 	const char *name;
 	int (*init)(struct command_protocol *);
 	void (*exit)(struct command_protocol *);
-	const char *(*identify)(unsigned char *data);
+	const char *(*identify)(struct dictionary *);
 	struct dictionary *(*normalize)(unsigned char *data);
 	unsigned char *(*denormalize)(struct dictionary *);
 	struct list_node list;
