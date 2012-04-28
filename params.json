@@ -1,0 +1,1 @@
+{"name":"Worlds","body":"Worlds is a tiny MMO engine.\r\n\r\n1. Run ./smmo\r\n2. telnet localhost 10000\r\n3. type the following: { \"command\":\"join_map\", \"map_id\":0, \"x\":10, \"y\":10 }\r\n","tagline":"A Tiny MMO Engine","google":"UA-31271069-1","note":"Don't delete this file! It's used internally to help with page regeneration."}
